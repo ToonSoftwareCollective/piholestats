@@ -40,7 +40,7 @@ Screen {
 
 		Text {
 			id: headerText
-			text: "Pi-Hole live gegevens (per " + app.lastupdated + ")" 
+			text: "Pi-Hole live gegevens (per " + app.lastupdated + ")"
 			font.family: qfont.semiBold.name
 			font.pixelSize: isNxt ? 25 : 20
 			anchors {
@@ -79,7 +79,7 @@ Screen {
                 rightMargin: isNxt ? 338 : 270
 				bottomMargin: isNxt ? 20 : 16
             }
-			
+
 // line 1 text
 			Text {
 				id: line1text
@@ -105,7 +105,7 @@ Screen {
 					rightMargin:  isNxt ? 100 : 80
 				}
 			}
-	
+
 // line 2 text
 			Text {
 				id: line2text
@@ -337,7 +337,7 @@ Screen {
 					top: line10text.top
 					left: line9value.left
 				}
-			}			
+			}
 // end lines
 		color: colors.addDeviceBackgroundRectangle
 		}
@@ -373,7 +373,7 @@ Screen {
 				bottomMargin: isNxt ? 20 : 16
 			}
 			onClicked: {
-                		changeState("http://"+app.connectionPath+"/admin/api.php?disable=30&auth="+app.authtoken);
+                		changeState(app.connectionPath+"/admin/api.php?disable=30&auth="+app.authtoken);
           		 }
 		}
 
@@ -393,7 +393,7 @@ Screen {
 				bottomMargin: isNxt ? 20 : 16
 			}
 			onClicked: {
-                changeState("http://"+app.connectionPath+"/admin/api.php?disable=60&auth="+app.authtoken);
+                changeState(app.connectionPath+"/admin/api.php?disable=60&auth="+app.authtoken);
             }
 		}
 
@@ -413,7 +413,7 @@ Screen {
 				bottomMargin: isNxt ? 20 : 16
 			}
 			onClicked: {
-                changeState("http://"+app.connectionPath+"/admin/api.php?disable=300&auth="+app.authtoken);
+                changeState(app.connectionPath+"/admin/api.php?disable=300&auth="+app.authtoken);
             }
 		}
 
@@ -433,7 +433,7 @@ Screen {
 				bottomMargin: isNxt ? 20 : 16
 			}
 			onClicked: {
-                changeState("http://"+app.connectionPath+"/admin/api.php?disable=600&auth="+app.authtoken);
+                changeState(app.connectionPath+"/admin/api.php?disable=600&auth="+app.authtoken);
             }
 		}
 
@@ -453,7 +453,7 @@ Screen {
 				bottomMargin: isNxt ? 20 : 16
 			}
 			onClicked: {
-                changeState("http://"+app.connectionPath+"/admin/api.php?disable&auth="+app.authtoken);
+                changeState(app.connectionPath+"/admin/api.php?disable&auth="+app.authtoken);
             }
 		}
 
@@ -473,7 +473,7 @@ Screen {
 				bottomMargin: isNxt ? 20 : 16
 			}
 			onClicked: {
-                changeState("http://"+app.connectionPath+"/admin/api.php?enable&auth="+app.authtoken);
+                changeState(app.connectionPath+"/admin/api.php?enable&auth="+app.authtoken);
             }
 		}
 // end lines
