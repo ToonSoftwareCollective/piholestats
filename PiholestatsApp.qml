@@ -15,7 +15,7 @@ App {
 	property PiholestatsScreen piholeScreen
 	property PiholestatsTile piholeTile
 	property bool dialogShown : false  //shown when changes have been. Shown only once.
-	
+
 	property SystrayIcon piholeTray
 	property bool showAppIcon : true
 	property bool firstTimeShown : true
@@ -40,12 +40,14 @@ App {
 		"gravity_last_updated":{"file_exists":true,"absolute":0,"relative":{"days":0,"hours":0,"minutes":0}}
 	}
 	property bool piholeDataRead: false
-	
+
 // app settings
 	property string connectionPath
+	property bool useSsl: false
+	property string uriScheme: "http"
 	property string ipadres
-	property string poortnummer : "80"
-    	property int refreshrate  : 60	// interval to retrieve data
+	property string poortnummer: "80"
+	property int refreshrate: 60	// interval to retrieve data
 	property string authtoken
 
 //data vars
@@ -85,12 +87,22 @@ App {
 		// read user settings
 		try {
 			userSettingsJSON = JSON.parse(userSettingsFile.read());
-			showAppIcon  = (userSettingsJSON['ShowTrayIcon'] == "yes") ? true : false
+			showAppIcon  = (userSettingsJSON['ShowTrayIcon'] == "yes") ? true : false;
 			connectionPath = userSettingsJSON['connectionPath'];
 			var splitVar = connectionPath.split(":")
-			ipadres = splitVar[0];
-			poortnummer = splitVar[1];
-			if (poortnummer.length < 2) poortnummer = "80";
+			if (splitVar.length < 3) {
+				// Old config, without uriScheme
+				ipadres = splitVar[0];
+				poortnummer = splitVar[1];
+			} else {
+				uriScheme = splitVar[0];
+				useSsl = (uriScheme == "https") ? true : false;
+				ipadres = splitVar[1].slice(2);
+				poortnummer = splitVar[2];
+			}
+			if (poortnummer.length < 2) {
+				poortnummer = (useSsl) ? "443" : "80";
+			}
 			refreshrate = userSettingsJSON['refreshrate'];
 			authtoken = userSettingsJSON['authtoken'];
 		} catch(e) {
@@ -106,13 +118,20 @@ App {
 
 // save user settings
 	function saveSettings(){
-		connectionPath = ipadres + ":" + poortnummer;
+		uriScheme = (useSsl) ? "https" : "http";
+		if (poortnummer == '80' && useSsl) {
+			poortnummer = '443'
+		}
+		if (poortnummer == '443' && !useSsl) {
+			poortnummer = '80'
+		}
+		connectionPath = uriScheme + "://" + ipadres + ":" + poortnummer;
 
  		var tmpUserSettingsJSON = {
-			"connectionPath" : ipadres + ":" + poortnummer,
+			"connectionPath" : connectionPath,
 			"refreshrate" : refreshrate,
 			"authtoken" : authtoken,
-			"ShowTrayIcon" : (showAppIcon) ? "yes" : "no"
+			"ShowTrayIcon" : (showAppIcon) ? "yes" : "no",
 		}
 
   		var doc3 = new XMLHttpRequest();
@@ -125,13 +144,13 @@ App {
 
 		if ( connectionPath.length > 4 ) {
 			var xmlhttp = new XMLHttpRequest();
-			xmlhttp.open("GET", "http://"+connectionPath+"/admin/api.php", true);
+			xmlhttp.open("GET", connectionPath+"/admin/api.php", true);
 			xmlhttp.onreadystatechange = function() {
 
 				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 
 					if (xmlhttp.status === 200) {
-						piholeConfigJSON = JSON.parse(xmlhttp.responseText);				
+						piholeConfigJSON = JSON.parse(xmlhttp.responseText);
 						tmp_ads_blocked_today = piholeConfigJSON['ads_blocked_today'];
 						tmp_ads_percentage_today = Math.round(piholeConfigJSON['ads_percentage_today']) + "%";
 						status = piholeConfigJSON['status'];

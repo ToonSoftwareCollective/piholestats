@@ -13,6 +13,7 @@ Screen {
 	onShown: {
 		addCustomTopRightButton("Opslaan");
 		showAppIconToggle.isSwitchedOn = app.showAppIcon;
+		sslToggle.isSwitchedOn = app.useSsl;
 		ipadresLabel.inputText = app.ipadres;
 		poortnummerLabel.inputText = app.poortnummer;
 		refreshrateLabel.inputText = app.refreshrate;
@@ -22,7 +23,7 @@ Screen {
 
 	onCustomButtonClicked: {
 		app.saveSettings();
-		app.firstTimeShown = true; 
+		app.firstTimeShown = true;
 		app.piholeDataRead = false;
 		app.readPiHolePHPData();
 		hide();
@@ -40,6 +41,9 @@ Screen {
 		if (text) {
 			poortnummerLabel.inputText = text;
 			app.poortnummer = text;
+			if (text == '443') {
+				app.useSsl = true;
+			}
 		}
 	}
 
@@ -65,8 +69,8 @@ Screen {
 		anchors {
 			left: parent.left
 			leftMargin: isNxt ? 62 : 50
-            		top: parent.top
-            		topMargin: isNxt ? 19 : 15
+			top: parent.top
+			topMargin: isNxt ? 19 : 15
 		}
 		font {
 			pixelSize: isNxt ? 25 : 20
@@ -75,7 +79,7 @@ Screen {
 		wrapMode: Text.WordWrap
 		text: "Pi-Hole icoon zichtbaar in systray?"
 	}
-	
+
 	OnOffToggle {
 		id: showAppIconToggle
 		height: 36
@@ -90,6 +94,37 @@ Screen {
 		}
 	}
 
+	// SSL toggle
+		Text {
+			id: sslText
+			anchors {
+				left: parent.left
+				leftMargin: isNxt ? 62 : 50
+				top: systrayText.bottom
+				topMargin: isNxt ? 19 : 15
+			}
+			font {
+				pixelSize: isNxt ? 25 : 20
+				family: qfont.bold.name
+			}
+			wrapMode: Text.WordWrap
+			text: "Use SSL/HTTPS verbinding?"
+		}
+
+		OnOffToggle {
+			id: sslToggle
+			height: 36
+			anchors {
+				right: parent.right
+				rightMargin: isNxt ? 125 : 100
+				top: sslText.top
+			}
+			leftIsSwitchedOn: false
+			onSelectedChangedByUser: {
+				app.useSsl = isSwitchedOn
+			}
+		}
+
 // IP address
 	EditTextLabel4421 {
 		id: ipadresLabel
@@ -100,11 +135,11 @@ Screen {
 		anchors {
 			left:parent.left
 			leftMargin: isNxt ? 62 : 50
-			top: systrayText.bottom
+			top: sslText.bottom
 			topMargin: isNxt ? 25 : 20
 		}
 	}
-			
+
 	IconButton {
 		id: editipAdresButton
 		width: isNxt ? 50 : 40
@@ -115,7 +150,7 @@ Screen {
 		}
 		iconSource: "qrc:/tsc/edit.png"
 		onClicked: {
-			qkeyboard.open("Voer hier het ip-adres van Pi-Hole in", ipadresLabel.inputText, saveIpadres)
+			qkeyboard.open("Voer hier het ip-adres of domeinnaam van Pi-Hole in", ipadresLabel.inputText, saveIpadres)
 		}
 	}
 
@@ -125,7 +160,7 @@ Screen {
 		height: editportNumberButton.height
 		width: isNxt ? 800 : 600
 		leftTextAvailableWidth: isNxt ? 600 : 480
-		leftText: qsTr("Port (standaard is 80)")
+		leftText: qsTr("Poort (standaard is 80 of 443)")
 		anchors {
 			left:parent.left
 			leftMargin: isNxt ? 62 : 50
@@ -133,7 +168,7 @@ Screen {
 			topMargin: isNxt ? 25 : 20
 		}
 	}
-	
+
 	IconButton {
 		id: editportNumberButton
 		width: isNxt ? 50 : 40
@@ -144,7 +179,7 @@ Screen {
 		}
 		iconSource: "qrc:/tsc/edit.png"
 			onClicked: {
-			qkeyboard.open("Voer hier de poort in", poortnummerLabel.inputText, savePoortnummer);
+			qkeyboard.open("Voer hier het poortnummer in", poortnummerLabel.inputText, savePoortnummer);
 		}
 	}
 // refresh rate
@@ -161,7 +196,7 @@ Screen {
 			topMargin: isNxt ? 25 : 20
 		}
 	}
-	
+
 	IconButton {
 		id: editRefreshRateButton
 		width: isNxt ? 50 : 40
@@ -189,7 +224,7 @@ Screen {
 			topMargin: isNxt ? 25 : 20
 		}
 	}
-	
+
 	IconButton {
 		id: editAuthTokenButton
 		width: isNxt ? 50 : 40
@@ -203,5 +238,5 @@ Screen {
 			qkeyboard.open("Voer hier de authentication token in", authtokenLabel.inputText, saveAuthToken);
 		}
 	}
-// end	
+// end
 }
